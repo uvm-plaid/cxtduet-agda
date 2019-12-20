@@ -12,6 +12,10 @@ postulate
     m ≤ᵣ n → n ≤ᵣ p
     ---------------
     → m ≤ᵣ p
+  _⊚[≤ε]_ : ∀ {𝓋₁ 𝓋₂ p₁ p₂} →
+    [𝒟]| 𝓋₁ - 𝓋₂ |≤ p₁ → p₁ ≤ p₂
+    ---------------
+    → [𝒟]| 𝓋₁ - 𝓋₂ |≤ p₂
   -- given two equal length vectors, and the operations:
     -- (1) truncate each, then take the dot product ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ ⟨ p ⟩ ⸣ ) or,
     -- (2) take the dot product, then truncate the result ([vec]⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p)
@@ -34,13 +38,12 @@ fp₂ : ∀ {N} {Γ : Γ[ N ]} {ℾ e τ Σ Σ₀ γ₁ γ₂ Σ′} → ℾ ⊢
   → Γ , Σ₀ ⊢ₚ e ⦂ τ , Σ
   → ⟨ γ₁ , γ₂ ⟩∈𝒢⟦ Σ′ ː ℾ ⟧
   → ⟨ γ₁ ⊢ e , γ₂ ⊢ e ⟩∈ℰₚ⟦ [vec]⌉ Σ′ ⌈⸢ one ⸣ ⨰ Σ ː (Σ′ ⟨⟨ τ ⟩⟩) ⟧
-{-
 
 -- PRIVACY FUNCTION APPLICATION
 fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`papp {Σ₁ = Σ₁} {Σ₂ = Σ₂} {τ₂ = τ₂} {p = p} e₁ e₂) r[γ₁,γ₂]
-  v₁ v₂ r₁ r₂ ε₁ ε₂
+  v₁ v₂ ⊢v₁ ⊢v₂
   ⟨ ⊢`papp {γ = γ₁} {e′ = e′₁} {𝓋₁ = 𝓋₁} ⊢e₁₁ ⊢e₁₂ ⊢e₁₂′ , ⊢`papp {γ = γ₂} {e′ = e′₂} {𝓋₁ = 𝓋₂} ⊢e₂₁ ⊢e₂₂ ⊢e₂₂′ ⟩
-  pr₁ pr₂
+  -- v r₁ r₂ ∈sup𝓋₁ ∈sup𝓋₂ pr₁ pr₂
   with fp ⊢γ₁ ⊢γ₂ e₁ r[γ₁,γ₂] (pƛ⦂ e′₁ ∥ γ₁) (pƛ⦂ e′₂ ∥ γ₂) (typeSafety e₁ ⊢e₁₁) (typeSafety e₁ ⊢e₂₁) ⟨ ⊢e₁₁ , ⊢e₂₁ ⟩
      | fp ⊢γ₁ ⊢γ₂ e₂ r[γ₁,γ₂] 𝓋₁ 𝓋₂ (typeSafety e₂ ⊢e₁₂) (typeSafety e₂ ⊢e₂₂) ⟨ ⊢e₁₂ , ⊢e₂₂ ⟩
 ... | IH₁ | IH₂ with typeSafety {Σ′ = Σ′} e₁ ⊢e₁₁ | typeSafety {Σ′ = Σ′} e₁ ⊢e₂₁ | L9 Σ₂ Σ′ τ₂ | IH₁
@@ -50,16 +53,14 @@ fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`papp {Σ₁ = Σ₁
   | ⟨∃ ↯ , ⟨ ⟨ ⟨ ⟨ ↯ , ↯ ⟩ , ↯ ⟩ , ↯ ⟩ , IH′ ⟩ ⟩
   rewrite ZZ
   with IH′ {v₁ = 𝓋₁} {v₂ = 𝓋₂} {ε₁ = (typeSafety e₂ ⊢e₁₂)} {ε₂ = (typeSafety e₂ ⊢e₂₂)} {s′ = Σ₂ ⨰ Σ′}
-            {Σ₀ = Σ′} (L3′ ⊢γ₁′ ⊢γ₂′ r[γ₁,γ₂]) IH₂ v₁ v₂ r₁ r₂ ε₁
-            ε₂ ⟨ ⊢e₁₂′ ,  ⊢e₂₂′ ⟩ pr₁ pr₂
+            {Σ₀ = Σ′} (L3′ ⊢γ₁′ ⊢γ₂′ r[γ₁,γ₂]) IH₂ v₁ v₂ ⊢v₁ ⊢v₂ ⟨ ⊢e₁₂′ ,  ⊢e₂₂′ ⟩
 ... | IH′′ rewrite lzero[⨰]< Σ′ >
     | L0-3 (([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ Σ₁) +[qty] ⟨ 0 ⟩)
     | L-distrib-vec [vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ Σ₁ [vec]⌉ Σ₂ ⌈⸢ p ⸣ =
-      let n = (𝑒^ᴿ (p2r (((mapⱽ (λ x → ⌉ x ⌈⸢ ⟨ 1 ⟩ ⸣) Σ′ ⨰ Σ₁) +[qty] ⟨ 0 ⟩) +[qty] ((⌉ Σ₂ ⨰ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣) ×[qty] p))) × r₂)
-          p′ = (𝑒^ᴿ (p2r ((([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ Σ₁) +[qty] ⟨ 0 ⟩) +[qty] (⌉ Σ₂ ⨰ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ×[qty] p))) × r₂)
-      in _⊚[≤ᵣ]_ {m = r₁} {n = n} {p = p′} IH′′ (LPAPP {r = r₂} {p = p} Σ₁ Σ₂ Σ′)
+      let n = (𝑒^ᴿ (p2r (((mapⱽ (λ x → ⌉ x ⌈⸢ ⟨ 1 ⟩ ⸣) Σ′ ⨰ Σ₁) +[qty] ⟨ 0 ⟩) +[qty] ((⌉ Σ₂ ⨰ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣) ×[qty] p))))
+          p′ = (𝑒^ᴿ (p2r ((([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ Σ₁) +[qty] ⟨ 0 ⟩) +[qty] (⌉ Σ₂ ⨰ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ×[qty] p))))
+      in _⊚[≤ε]_  IH′′ ((LPAPP  {p = p} Σ₁ Σ₂ Σ′))
 
--}
 {-
 -- PRIVACY CASE LEFT-LEFT
 fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`pcase {Σ₁₁ = Σ₁₁} {Σ₁₂ = Σ₁₂} {Σ₂ = Σ₂} e₁ e₂ e₃ τε) r[γ₁,γ₂]
