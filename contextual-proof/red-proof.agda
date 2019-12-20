@@ -61,17 +61,17 @@ fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`papp {Σ₁ = Σ₁
           p′ = (𝑒^ᴿ (p2r ((([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ Σ₁) +[qty] ⟨ 0 ⟩) +[qty] (⌉ Σ₂ ⨰ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ×[qty] p))))
       in _⊚[≤ε]_  IH′′ ((LPAPP  {p = p} Σ₁ Σ₂ Σ′))
 
-{-
 -- PRIVACY CASE LEFT-LEFT
 fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`pcase {Σ₁₁ = Σ₁₁} {Σ₁₂ = Σ₁₂} {Σ₂ = Σ₂} e₁ e₂ e₃ τε) r[γ₁,γ₂]
-  v₁ v₂ r₁ r₂ ε₁ ε₂
-  ⟨ ⊢`pcase/l {𝓋₁ = 𝓋₁₁} re₁ re₂ , ⊢`pcase/l {𝓋₁ = 𝓋₁₂} re₃ re₄ ⟩
-  pr₁ pr₂ with typeSafety {Σ′ = Σ′} e₁ re₁
+  -- v₁ v₂ r₁ r₂ ε₁ ε₂ pr₁ pr₂
+  𝓋₁ 𝓋₂ ⊢𝓋₁ ⊢𝓋₂
+  ⟨ ⊢`pcase/l {𝓋₁ = 𝓋₁₁} re₁ re₂ , ⊢`pcase/l {𝓋₁ = 𝓋₁₂} re₃ re₄ ⟩ v r₁ r₂ ∈sup𝓋₁ ∈sup𝓋₂ pr₁ pr₂ with typeSafety {Σ′ = Σ′} e₁ re₁
     | typeSafety {Σ′ = Σ′} e₁ re₃
     | fp ⊢γ₁ ⊢γ₂ e₁ r[γ₁,γ₂] (inl 𝓋₁₁) (inl 𝓋₁₂) (typeSafety {Σ′ = Σ′} e₁ re₁) (typeSafety {Σ′ = Σ′} e₁ re₃) ⟨ re₁ , re₃ ⟩
-... | ⊢inl ⊢v₁ | ⊢inl ⊢v₂ | IH₁ with fp₂ (⊢s ⊢v₁ ⊢γ₁) (⊢s ⊢v₂ ⊢γ₂) e₂ ⟨∃ ⊢v₁ , ⟨∃ ⊢v₂ , ⟨ IH₁ , r[γ₁,γ₂] ⟩ ⟩ ⟩ v₁ v₂ r₁ r₂ (typeSafety₂ e₂ re₂) (typeSafety₂ e₂ re₄) ⟨ re₂ , re₄ ⟩ pr₁ pr₂
-... | IH₂ rewrite L0-3 (Σ′ ⨰ Σ₁₁) = subsumption₂ τε IH₂
--}
+... | ⊢inl ⊢v₁ | ⊢inl ⊢v₂ | IH₁ with fp₂ (⊢s ⊢v₁ ⊢γ₁) (⊢s ⊢v₂ ⊢γ₂) e₂
+    ⟨∃ ⊢v₁ , ⟨∃ ⊢v₂ , ⟨ IH₁ , r[γ₁,γ₂] ⟩ ⟩ ⟩ 𝓋₁ 𝓋₂
+    (typeSafety₂ e₂ re₂) (typeSafety₂ e₂ re₄) ⟨ re₂ , re₄ ⟩ v r₁ r₂ ∈sup𝓋₁ ∈sup𝓋₂ pr₁ pr₂
+... | IH₂ rewrite L0-3 (Σ′ ⨰ Σ₁₁) = subsumption₂ IH₂
 
 -- PRIVACY CASE LEFT-RIGHT
 {-

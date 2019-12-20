@@ -13,8 +13,11 @@ mutual
   -- ε-closeness/ε-DP
   [𝒟]|_-_|≤_ : 𝒟 𝓋 → 𝒟 𝓋 → Priv → Set
   [𝒟]| x₁ - x₂ |≤ ε = ∀ (x : 𝓋) →
-    (r₁ r₂ : ℝ) → x ∈support x₁ → x ∈support x₂ → Pr[ x₁ ⩦ x ]≡[ r₁ ] →
-    Pr[ x₂ ⩦ x ]≡[ r₂ ] → r₁ ≤ᵣ ((𝑒^ᴿ (p2r ε)) × r₂)
+    (r₁ r₂ : ℝ)
+    → x ∈support x₁
+    → x ∈support x₂
+    → Pr[ x₁ ⩦ x ]≡[ r₁ ]
+    → Pr[ x₂ ⩦ x ]≡[ r₂ ] → r₁ ≤ᵣ ((𝑒^ᴿ (p2r ε)) × r₂)
 
   ⟨_⊢_,_⊢_⟩∈ℰₚ⟦_ː_⟧ : ∀ {N} → γ[ N ] → PTerm N → γ[ N ] → PTerm N → Priv → τ ᴢ → Set
   ⟨ γ₁ ⊢ e₁ , γ₂ ⊢ e₂ ⟩∈ℰₚ⟦ p ː τ ⟧ = ∀ 𝓋₁ 𝓋₂ →
