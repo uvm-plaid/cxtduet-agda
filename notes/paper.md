@@ -210,19 +210,25 @@ Privacy function application assumes the distribution of output values directly.
   → γ ⊢ (e₁ `papp e₂) ⇓ₚ 𝓋₂
 ```
 
-For *bind* we rely on the probability distribution sample existential to draw a sample from *e₁*'s output, which is then bound in *e₂*. The output of *bind* can then be defined as the first projection of the *E* existential dependent pair premise.
+For *bind* we rely on the probability distribution sample existential to draw a sample from *e₁*'s output, which is then bound in *e₂*. The output of *bind* can then be defined as the first projection of the *F* existential dependent pair premise.
 
 
 ```haskell
 
 -- BIND
-⊢`bind: ∀ {N} {γ : γ[N]} {e₂ : PTerm (ꜱ N)} {e₁ : PTerm N} {v₁ : 𝓋} {τ} {⊢τ : ⊢ v₁ ⦂ τ }
-  → γ ⊢ e₁ ⇓ₚ return ⟨∃ v₁ , ⊢τ ⟩
-  → (E : ∃ v₂ ST v₁ ∷ γ ⊢ e₂ ⇓ₚ v₂)
-  → let v₃ = do ⟨∃ v₁ , ⊢v₁ ⟩ ← (return ⟨∃ v₁ , ⊢τ ⟩) ; dπ₁ E in
-  -----------------------------------------------------------
-  γ ⊢ (`bind e₁ ∥ e₂) ⇓ₚ v₃
 
+bind-support: ∀ {ℓ}{A B: Set ℓ} → (𝓋: 𝒟 A) → (∃ x⦂ A ST x ∈support 𝓋 → 𝒟 B) → 𝒟 B
+⊢`bind : ∀ {N} {γ : γ[ N ]} {e₂ : PTerm (ꜱ N)} {e₁ : PTerm N} {𝓋₁ : 𝒟 𝓋}
+  → γ ⊢ e₁ ⇓ₚ 𝓋₁
+  → (F : ∀ v₁ → v₁ ∈support 𝓋₁ → ∃ 𝓋₂ ST v₁ ∷ γ ⊢ e₂ ⇓ₚ 𝓋₂)
+  → let 𝓋₃ =
+          let _>>=_ = bind-support
+          in do
+            v₁ε ← 𝓋₁
+            let ⟨∃ v₁ , ε ⟩ = v₁ε in dπ₁ (F v₁ ε)
+    in
+  -----------------------------------------------------------
+  γ ⊢ (`bind e₁ ∥ e₂) ⇓ₚ 𝓋₃
 ```
 
 
