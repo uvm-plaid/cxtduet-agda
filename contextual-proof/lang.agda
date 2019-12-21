@@ -97,25 +97,6 @@ module _ {ℓ} {A : Set ℓ} {{_ : has[+] A}} {{_ : cor[+] A}} {{_ : has[≡?] A
   absorb[∞/+]<_> : ∀ (x : qty A) → x + `∞ ≡ `∞
   absorb[∞/+]< x > = ↯
 
-  module _ {{_ : has[×] A}} where
-    one[qty] : qty A
-    one[qty] = ⟨ one ⟩
-
-    -- DCD: worried about this... we will want to fix this eventually
-    _×[qty]_ : qty A → qty A → qty A
-    `∞ ×[qty] _ = `∞
-    _ ×[qty] `∞ = `∞
-    ⟨ x ⟩ ×[qty] ⟨ y ⟩ = ⟨ x × y ⟩
-
-    {-# DISPLAY _×[qty]_ = _×_ #-}
-
-    instance
-      has[×][qty] : has[×] (qty A)
-      has[×][qty] = record { one = one[qty] ; _×_ = _×[qty]_ }
-
-    postulate
-      instance
-        cor[×][qty] : cor[×] (qty A)
 
 module _ {ℓ} {A : Set ℓ} where
   module _ {{_ : has[⊔] A}} where
@@ -159,7 +140,7 @@ module _ {ℓ ℓᴿ} {A : Set ℓ} {{_ : has[<][ ℓᴿ ] A}} where
         instance
           cor[⋚?][qty] : cor[⋚?] (qty A)
 
-module _ {ℓ} {A : Set ℓ} {{_ : has[≡?] A}} where
+module _ {ℓ} {A : Set ℓ} {{_ : has[+] A}} {{_ : has[≡?] A}} where
 
   _≡?[qty]_ : qty A → qty A → ≡!
   ⟨ x₁ ⟩ ≡?[qty] ⟨ x₂ ⟩ = x₁ ≡? x₂
@@ -175,6 +156,30 @@ module _ {ℓ} {A : Set ℓ} {{_ : has[≡?] A}} where
     postulate
       instance
         cor[≡?][qty] : cor[≡?] (qty A)
+
+  module _ {{_ : has[×] A}} {{_ : has[+] A}} {{_ : has[≡?] A}} where
+    one[qty] : qty A
+    one[qty] = ⟨ one ⟩
+
+    _×[qty]_ : qty A → qty A → qty A
+    `∞ ×[qty] x with x ≡? ⟨ zero ⟩
+    … | [≢] = `∞
+    … | [≡] = ⟨ zero ⟩
+    x ×[qty] `∞ with x ≡? ⟨ zero ⟩
+    … | [≢] = `∞
+    … | [≡] = ⟨ zero ⟩
+    ⟨ x ⟩ ×[qty] ⟨ y ⟩ = ⟨ x × y ⟩
+
+    {-# DISPLAY _×[qty]_ = _×_ #-}
+
+    instance
+      has[×][qty] : has[×] (qty A)
+      has[×][qty] = record { one = one[qty] ; _×_ = _×[qty]_ }
+
+      postulate
+        instance
+          cor[×][qty] : cor[×] (qty A)
+
 
 ⌉_⌈⸢_⸣ : ∀ {ℓ₁ ℓ₂} {A : Set ℓ₁} {B : Set ℓ₂}
   {{_ : has[+] A}} {{_ : has[≡?] A}} {{_ : has[+] B}}
