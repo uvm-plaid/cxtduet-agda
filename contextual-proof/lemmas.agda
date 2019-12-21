@@ -50,7 +50,7 @@ postulate
     → ([𝒟]| bind-support x₁ (λ v₁ε → dπ₁ (F₁ (dπ₁ v₁ε) (dπ₂ v₁ε))) -
       bind-support x₂ (λ v₁ε → dπ₁ (F₂ (dπ₁ v₁ε) (dπ₂ v₁ε))) |≤
       ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ (Σ₁ +ⱽ Σ₂)))
-  ∞UB : ∀ {r₁ r₂ : ℝ} → 𝕣 0 <ᵣ r₁ → 𝕣 0 <ᵣ r₂ → r₁ ≤ᵣ (𝑒^ᴿ (p2r `∞) × r₂)
+  ∞UB : ∀ {r₁ r₂ : ℝ} → 𝕣 0 <ᵣ r₂ → r₁ ≤ᵣ (𝑒^ᴿ (p2r `∞) × r₂)
   LEqConstTermsZeroDist : ∀ {Σ′ Σ v₁ v₂ τ v r₁ r₂}
     → [vec]⌉ Σ′ ⌈⸢ one ⸣ ⨰ [vec]⌉ Σ  ⌈⸢ `∞ ⸣ ≡ ⟨ 0 ⟩
     → ⟨ v₁ , v₂ ⟩∈𝒱′⟦ Σ′ ⟨⟨ τ ⟩⟩ ː _ , _ ː Σ ⨰ Σ′ ⟧
@@ -61,6 +61,12 @@ postulate
     → r₁ ≤ᵣ r₂ -- more accurately r₁ ≡ r₂
   Lexp0 : (𝑒^ᴿ (p2r ⟨ 0 ⟩)) ≡ one
   lunit[×][ℝ]<_> : ∀ (r : ℝ) → one × r ≡ r
+  -- seems to be necessary because agda won't reduce the LHS join
+  L∞add : ∀ {N} (p₂ p₃ : Priv) (Σ′ Σ₁₁ Σ₁₂ : Σ[ N ]) (Σ₂ Σ₃ : Σₚ[ N ])
+    → `∞ + ([vec]⌉ Σ′ ⌈⸢ one ⸣ ⨰ ((([vec]⌉ Σ₁₁  ⌈⸢ p₂ ⸣) + Σ₂) ⊔ (([vec]⌉ Σ₁₂  ⌈⸢ p₃ ⸣) + Σ₃))) ≡< qty ℕ > `∞
+  L∞Pres : ∀ {N} (Σ Σ′ : Σ[ N ])
+    → Σ ⨰ Σ′ ≡< qty ℕ > `∞
+    → ([vec]⌉ Σ′ ⌈⸢ one ⸣ ⨰ [vec]⌉ Σ ⌈⸢ `∞ ⸣) ≡< qty ℕ > `∞
   LTruncSep : ∀ {N} (p : Priv) → (Σ : Σ[ N ]) → [vec]⌉ Σ ⌈⸢ p ⸣ ≡ p ⨵ [vec]⌉ Σ ⌈⸢ one ⸣
   LVecScale : ∀ {N} (p : Priv)
     → (Σ′ Σ : Σ[ N ])
@@ -72,6 +78,26 @@ postulate
   L-P≤KP : ∀ {N p} (Σ₁ :  Σₚ[ N ]) (Σ₂ Σ′ : Σ[ N ])
     →  (((([vec]⌉ Σ′ ⌈⸢ ⟨ one ⟩ ⸣) ⨰ Σ₁)) +[qty] ((⌉ Σ₂ ⨰ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣) ×[qty] p))
     ≤ (([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ Σ₁) +[qty] (([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ₂ ⌈⸢ ⟨ 1 ⟩ ⸣) ×[qty] p))
+  LdistribJoin : ∀ {N} (p₂ p₃ : Priv) (Σ′ Σ₁ Σ₁₁ Σ₁₂ : Σ[ N ]) (Σ₂ Σ₃ : Σₚ[ N ])
+    → [vec]⌉ Σ′ ⌈⸢ one ⸣ ⨰ ([vec]⌉ Σ₁ ⌈⸢ `∞ ⸣ + ((([vec]⌉ Σ₁₁  ⌈⸢ p₂ ⸣) + Σ₂) ⊔ (([vec]⌉ Σ₁₂  ⌈⸢ p₃ ⸣) + Σ₃))) ≡ ([vec]⌉ Σ′ ⌈⸢ one ⸣ ⨰ [vec]⌉ Σ₁ ⌈⸢ `∞ ⸣) + ([vec]⌉ Σ′ ⌈⸢ one ⸣ ⨰ ((([vec]⌉ Σ₁₁  ⌈⸢ p₂ ⸣) + Σ₂) ⊔ (([vec]⌉ Σ₁₂  ⌈⸢ p₃ ⸣) + Σ₃)))
+    -- unused, alternative proof for privacy application:
+    -- given two equal length vectors, and the operations:
+    -- (1) truncate each, then take the dot product ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ ⟨ p ⟩ ⸣ ) or,
+    -- (2) take the dot product, then truncate the result ([vec]⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p)
+    -- both operations also involve potential "scaling" of the constant p by 0 or 1
+  truncDotTrichotomy : ∀ {N} (p : Priv) → (Σ′ Σ : Σ[ N ])
+    -- the possible outcomes are in three categories:
+    -- at least one of the vectors is the constant zero vector, so both operations equal zero
+    → ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ p ⸣ ) ≡ zero ∧ (⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p) ≡ zero
+    -- there is at most one dot product "match", i.e. all other elements of the product equal zero
+    -- both operations equal the constant p
+    ∨ ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ p ⸣ ) ≡ p ∧ (⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p) ≡ p
+    -- there is at least one dot product match
+    -- operation (1) equals k·p where 1 ≤ k
+    -- operation (2) equals p
+    -- this disjunct should have exists k
+    ∨ ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ p ⸣ ) ≡ {- k × -} p {- ∧ one ≤ k -} ∧ (⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p) ≡ p
+
 
 LPAPP : ∀ {N p} → (Σ₁ :  Σₚ[ N ]) → ( Σ₂ Σ′ : Σ[ N ]) → (((([vec]⌉ Σ′ ⌈⸢ ⟨ one ⟩ ⸣) ⨰ Σ₁) +[qty] ⟨ zero ⟩) +[qty] ((⌉ Σ₂ ⨰ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣) ×[qty] p)) ≤ (([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ Σ₁) +[qty] ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ₂ ⌈⸢ p ⸣))
 LPAPP {p = p} Σ₁ Σ₂ Σ′ rewrite (L0-4 (([vec]⌉ Σ′ ⌈⸢ ⟨ one ⟩ ⸣) ⨰ Σ₁))

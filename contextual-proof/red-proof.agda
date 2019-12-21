@@ -16,22 +16,6 @@ postulate
     [𝒟]| 𝓋₁ - 𝓋₂ |≤ p₁ → p₁ ≤ p₂
     ---------------
     → [𝒟]| 𝓋₁ - 𝓋₂ |≤ p₂
-  -- given two equal length vectors, and the operations:
-    -- (1) truncate each, then take the dot product ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ ⟨ p ⟩ ⸣ ) or,
-    -- (2) take the dot product, then truncate the result ([vec]⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p)
-    -- both operations also involve potential "scaling" of the constant p by 0 or 1
-  truncDotTrichotomy : ∀ {N} (p : Priv) → (Σ′ Σ : Σ[ N ])
-    -- the possible outcomes are in three categories:
-    -- at least one of the vectors is the constant zero vector, so both operations equal zero
-    → ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ p ⸣ ) ≡ zero ∧ (⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p) ≡ zero
-    -- there is at most one dot product "match", i.e. all other elements of the product equal zero
-    -- both operations equal the constant p
-    ∨ ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ p ⸣ ) ≡ p ∧ (⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p) ≡ p
-    -- there is at least one dot product match
-    -- operation (1) equals k·p where 1 ≤ k
-    -- operation (2) equals p
-    -- this disjunct should have exists k
-    ∨ ([vec]⌉ Σ′ ⌈⸢ ⟨ 1 ⟩ ⸣ ⨰ [vec]⌉ Σ ⌈⸢ p ⸣ ) ≡ {- k × -} p {- ∧ one ≤ k -} ∧ (⌉ Σ′ ⨰ Σ ⌈⸢ ⟨ 1 ⟩ ⸣ × p) ≡ p
 
 -- Theorem 1.1.2 (Fundamental Property / (Metric Preservation in Fuzz)).
 fp₂ : ∀ {N} {Γ : Γ[ N ]} {ℾ e τ Σ Σ₀ γ₁ γ₂ Σ′} → ℾ ⊢ γ₁ → ℾ ⊢ γ₂
@@ -73,25 +57,25 @@ fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`pcase {Σ₁₁ = �
 ... | IH₂ rewrite L0-3 (Σ′ ⨰ Σ₁₁) = subsumption₂ IH₂
 
 -- PRIVACY CASE LEFT-RIGHT
-{-
 fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′}
   ⊢γ₁ ⊢γ₂
-  (⊢`pcase e₁ e₂ e₃ τε) r[γ₁,γ₂]
+  (⊢`pcase {Σ₁ = Σ₁} {Σ₁₁ = Σ₁₁} {Σ₁₂ = Σ₁₂} {Σ₂ = Σ₂} {Σ₃ = Σ₃} {p₂ = p₂} {p₃ = p₃} e₁ e₂ e₃ τε) r[γ₁,γ₂]
   𝓋₁ 𝓋₂ ⊢𝓋₁ ⊢𝓋₂
   ⟨ ⊢`pcase/l {𝓋₁ = 𝓋₁₁} re₁ re₂ , ⊢`pcase/r {𝓋₁ = 𝓋₁₂} re₃ re₄ ⟩
   v r₁ r₂
-  ⊢v
   ∈sup𝓋₁
   ∈sup𝓋₂
   pr₁ pr₂
   with  fp ⊢γ₁ ⊢γ₂ e₁ r[γ₁,γ₂] (inl 𝓋₁₁) (inr 𝓋₁₂) (typeSafety {Σ′ = Σ′} e₁ re₁) (typeSafety {Σ′ = Σ′} e₁ re₃) ⟨ re₁ , re₃ ⟩
 ... | IH with typeSafety {Σ′ = Σ′} e₁ re₁ | typeSafety {Σ′ = Σ′} e₁ re₃
-… | ⊢inl X | ⊢inr Y = {! IH !}
+… | ⊢inl X
+  | ⊢inr Y rewrite LdistribJoin p₂ p₃ Σ′ Σ₁ Σ₁₁ Σ₁₂ Σ₂ Σ₃
+  | L∞Pres Σ₁ Σ′ IH
+  | L∞add p₂ p₃ Σ′ Σ₁₁ Σ₁₂ Σ₂ Σ₃ = ∞UB (nz-support 𝓋₂ v r₂ ∈sup𝓋₂ pr₂)
 
 -- analogous to the above cases
 -- fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`pcase e₁ e₂ e₃ τε) r[γ₁,γ₂] v₁ v₂ r₁ r₂ ε₁ ε₂ ⟨ ⊢`pcase/r x π₃ , ⊢`pcase/l x₁ π₄ ⟩ pr₁ pr₂ = {!   !}
 -- fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′} ⊢γ₁ ⊢γ₂ (⊢`pcase e₁ e₂ e₃ τε) r[γ₁,γ₂] v₁ v₂ r₁ r₂ ε₁ ε₂ ⟨ ⊢`pcase/r x π₃ , ⊢`pcase/r x₁ π₄ ⟩ pr₁ pr₂ = {!   !}
--}
 
 -- RETURN
 fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′}
@@ -106,7 +90,7 @@ fp₂ {Σ₀ = Σ₀} {Σ′ = Σ′}
   with fp ⊢γ₁ ⊢γ₂ e r[γ₁,γ₂] v₁ v₂ (typeSafety {Σ′ = Σ′} e e₁⇓) (typeSafety {Σ′ = Σ′} e e₂⇓) ⟨ e₁⇓ , e₂⇓ ⟩
 … | IH with truncDichotomy₁ Σ′ Σ
 ... | ʟ x rewrite x | Lexp0 | lunit[×][ℝ]< r₂ > = LEqConstTermsZeroDist x IH ∈sup𝓋₁ ∈sup𝓋₂ pr₁ pr₂
-... | ʀ y rewrite y = ∞UB (nz-support 𝓋₁ v r₁ ∈sup𝓋₁ pr₁) (nz-support 𝓋₂ v r₂ ∈sup𝓋₂ pr₂)
+... | ʀ y rewrite y = ∞UB (nz-support 𝓋₂ v r₂ ∈sup𝓋₂ pr₂)
 
 
 -- BIND
