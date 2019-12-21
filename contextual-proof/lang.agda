@@ -157,28 +157,28 @@ module _ {ℓ} {A : Set ℓ} {{_ : has[+] A}} {{_ : has[≡?] A}} where
       instance
         cor[≡?][qty] : cor[≡?] (qty A)
 
-  module _ {{_ : has[×] A}} {{_ : has[+] A}} {{_ : has[≡?] A}} where
-    one[qty] : qty A
-    one[qty] = ⟨ one ⟩
+module _ {ℓ} {A : Set ℓ} {{_ : has[+] A}} {{_ : cor[+] A}} {{_ : has[≡?] A}} {{_ : has[×] A}} where
+  one[qty] : qty A
+  one[qty] = ⟨ one ⟩
 
-    _×[qty]_ : qty A → qty A → qty A
-    `∞ ×[qty] x with x ≡? ⟨ zero ⟩
-    … | [≢] = `∞
-    … | [≡] = ⟨ zero ⟩
-    x ×[qty] `∞ with x ≡? ⟨ zero ⟩
-    … | [≢] = `∞
-    … | [≡] = ⟨ zero ⟩
-    ⟨ x ⟩ ×[qty] ⟨ y ⟩ = ⟨ x × y ⟩
+  _×[qty]_ : qty A → qty A → qty A
+  `∞ ×[qty] x with x ≡? ⟨ zero ⟩
+  … | [≢] = `∞
+  … | [≡] = ⟨ zero ⟩
+  x ×[qty] `∞ with x ≡? ⟨ zero ⟩
+  … | [≢] = `∞
+  … | [≡] = ⟨ zero ⟩
+  ⟨ x ⟩ ×[qty] ⟨ y ⟩ = ⟨ x × y ⟩
 
-    {-# DISPLAY _×[qty]_ = _×_ #-}
+  {-# DISPLAY _×[qty]_ = _×_ #-}
 
-    instance
-      has[×][qty] : has[×] (qty A)
-      has[×][qty] = record { one = one[qty] ; _×_ = _×[qty]_ }
+  instance
+    has[×][qty] : has[×] (qty A)
+    has[×][qty] = record { one = one[qty] ; _×_ = _×[qty]_ }
 
-      postulate
-        instance
-          cor[×][qty] : cor[×] (qty A)
+    postulate
+      instance
+        cor[×][qty] : cor[×] (qty A)
 
 
 ⌉_⌈⸢_⸣ : ∀ {ℓ₁ ℓ₂} {A : Set ℓ₁} {B : Set ℓ₂}
